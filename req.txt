@@ -3,4 +3,4 @@ oauth2client
 pandas
 flask
 flask_cors
-dateutil
+python-dateutil

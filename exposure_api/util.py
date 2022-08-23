@@ -42,11 +42,11 @@ def sort_and_unify_dates(date_list):
 
 def fetch_latest_exposure_data(instance_path):
     scope = ['https://spreadsheets.google.com/feeds']
-    cred_path = os.path.join(instance_path, '.env/google_credentials.json')
+    cred_path = os.path.join(instance_path, 'google_credentials.json')
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
         cred_path, scope)
     gc = gspread.authorize(credentials)
-    spreadsheet_key = '1K4w2y4q7wZ0fs6_Tg51qXId1m2JaHrlADTHyvQFkiq0'
+    spreadsheet_key = '1drWG-prE3HWZXrrUzUdjM2vgwH1br_KaOl40zbVIUtM'
     book = gc.open_by_key(spreadsheet_key)
     worksheet = book.worksheet("Exposure")
     table = worksheet.get_all_values()
@@ -57,8 +57,7 @@ def fetch_latest_exposure_data(instance_path):
 
 def get_building_exposure_map(instance_path):
     exposure_data = fetch_latest_exposure_data(instance_path)
-    exposure_data['available_dates'] = exposure_data[[
-        'On-site infectivity dates', 'Latest Infectivity Date', 'Older Dates']].agg(','.join, axis=1)
+    exposure_data['available_dates'] = exposure_data.iloc[:, [2, 5]].agg(','.join, axis=1)
     exposure_data['available_dates'] = exposure_data['available_dates'].str.strip()
     exposure_data['available_dates'] = exposure_data['available_dates'].str.split(
         ",")
@@ -67,21 +66,4 @@ def get_building_exposure_map(instance_path):
 
     logging.debug('Finished creating building_exposure_map')
     return dict(
-        zip(exposure_data['CANN'], exposure_data['available_dates']))
-
-
-def read_file(filename):
-    with open(filename) as json_file:
-        data = json.load(json_file)
-    return data
-
-
-def write_json(date_val, filename="./dashboard_request.json"):
-    print(filename)
-    data = read_file(filename)
-    data.append(date_val)
-
-
-    with open(filename, 'w') as f:
-        json.dump(data, f, indent=4)
-    return
+        zip(exposure_data.iloc[:, 1], exposure_data['available_dates']))

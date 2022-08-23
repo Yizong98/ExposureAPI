@@ -9,20 +9,8 @@ logging.basicConfig(filename='exposure_api.log', level=logging.DEBUG)
 def create_app():
     app = Flask(__name__)
     CORS(app, supports_credentials=True)
-    db_file_name = os.path.join(app.instance_path, 'dashboard_request.json')
     building_exposure_map = get_building_exposure_map(app.instance_path)
     logging.debug('app started! ' + os.getcwd())
-
-    @app.route('/record_request_info', methods=['GET'])
-    def record_request_info():
-        error, log = get_value_from_request(request, 'log')
-        if error:
-            logging.debug('no log provided in the request')
-            return make_response({"message": "no log provided in the request!"}, 400)
-
-        logging.debug('writing log to file...')
-        write_json(log, db_file_name)
-        return make_response({"message": "successful log!"})
 
     @app.route('/update_building_exposure_map')
     def update_building_exposure_map():
@@ -32,6 +20,7 @@ def create_app():
 
     @app.route('/get_exposure_dates_for_building', methods=['GET'])
     def get_exposure_dates_for_building():
+        
         error, caan = get_value_from_request(request, 'caan')
         if error:
             logging.debug('no caan provided in the request')

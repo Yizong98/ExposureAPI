@@ -10,6 +10,7 @@ setup(
         'oauth2client',
         'pandas',
         'flask_cors',
-        'python-dateutil'
+        'python-dateutil',
+        'waitress'
     ],
 )
