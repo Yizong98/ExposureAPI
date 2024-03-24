@@ -1,0 +1,48 @@
+# exposure-deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: exposure-api
+spec:
+  selector:
+    matchLabels:
+      app: exposure-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: exposure-api
+    spec:
+      containers:
+        - name: exposureapi
+          image: ucsdcmi/exposureapi:sheet
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 10m
+              memory: 80Mi
+            requests:
+              cpu: 10m
+              memory: 80Mi
+          ports:
+            - containerPort: 8080
+              name: "http-server"
+          volumeMounts:
+          - mountPath: /usr/local/var/exposure_api-instance/secrets
+            name: exposure-api-secrets
+            readOnly: true
+      volumes:
+      - name: exposure-api-secrets
+        secret:
+          secretName: exposure-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: exposure-service
+spec:
+  ports:
+    - name: client
+      port: 8080
+  selector:
+    app: exposure-api

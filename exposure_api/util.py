@@ -42,7 +42,7 @@ def sort_and_unify_dates(date_list):
 
 def fetch_latest_exposure_data(instance_path):
     scope = ['https://spreadsheets.google.com/feeds']
-    cred_path = os.path.join(instance_path, '.env/google_credentials.json')
+    cred_path = os.path.join(instance_path, 'secrets/google_credentials.json')
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
         cred_path, scope)
     gc = gspread.authorize(credentials)
